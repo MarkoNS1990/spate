@@ -38,9 +38,18 @@ ul {
   list-style-type: none;
   padding: 0;
 }
+li {
+  cursor: pointer;
+}
 
-.list-item {
-  list-style-type: none;
+.list-item:hover {
+  text-decoration: underline;
+}
+
+.open:hover,
+.not-open:hover {
+  text-decoration: underline;
+  transition: 0.2s ease-in;
 }
 
 .open::before {

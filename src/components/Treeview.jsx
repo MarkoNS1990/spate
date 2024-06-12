@@ -1,21 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { categories } from "../utils/categories";
-import { getNodeData } from "../utils/api";
 
-const TreeView = ({ treeData = [] }) => {
+const TreeView = ({ treeData = [], shouldShow }) => {
   const [openIds, setOpenIds] = useState([]);
   const navigate = useNavigate();
-  const memoizedNodeData = useMemo(() => getNodeData().shouldShow, []);
 
-  const toggleBranch = (id, label, children, name) => {
+  const toggleBranch = (id) => {
     const tempState = [...openIds];
     const isOpen = tempState.includes(id);
-    if (children.length <= 1) {
-      label === "cat1"
-        ? navigate(`/industries/${name}`)
-        : navigate(`${categories[label]}/${name}`);
-    }
 
     if (isOpen) {
       const target = tempState.indexOf(id);
@@ -25,6 +18,12 @@ const TreeView = ({ treeData = [] }) => {
     }
 
     setOpenIds(tempState);
+  };
+
+  const handleNavigate = (label, name, id) => {
+    label === "cat1"
+      ? navigate(`/industries/${name}`)
+      : navigate(`${categories[label]}/${id}`);
   };
 
   const handleSpanClass = (leaf, isOpen) => {
@@ -47,15 +46,19 @@ const TreeView = ({ treeData = [] }) => {
       {treeData.map((leaf) => {
         const isOpen = openIds.includes(leaf.id);
 
-        return !leaf.name.includes("NO_LABEL") && memoizedNodeData ? (
+        return !leaf.name.includes("NO_LABEL") ? (
           <li key={leaf.id}>
             <div
-              className={handleSpanClass(leaf, isOpen)}
+              className="list-item"
               data-id={leaf.id}
-              onClick={() =>
-                toggleBranch(leaf.id, leaf.label, leaf.children, leaf.name)
-              }
+              onClick={() => handleNavigate(leaf.label, leaf.name, leaf.id)}
             >
+              <span
+                onClick={() =>
+                  toggleBranch(leaf.id, leaf.label, leaf.children, leaf.name)
+                }
+                className={handleSpanClass(leaf, isOpen)}
+              ></span>
               {!leaf.name.includes("NO_LABEL") && leaf.name}
             </div>
             {leaf.children && isOpen && (
